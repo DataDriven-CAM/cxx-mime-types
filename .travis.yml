@@ -49,7 +49,8 @@ script:
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
       nmake -f Makefile.win;
     else
-      g++-9 --version;
+      export CC=gcc-9 && export CXX=g++-9;
+      ${CXX} --version;
       make -f Makefile;
     fi
   - ./main
