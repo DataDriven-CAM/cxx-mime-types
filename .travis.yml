@@ -39,4 +39,4 @@ script:
   - mkdir -p test/build/src
   - yarn test
   - cd test
-  -./main
+  - ./main
