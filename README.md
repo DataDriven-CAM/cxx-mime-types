@@ -1,3 +1,4 @@
+[![Build Status][travis-ci-build-image]][travis-ci-build-url]
 # cxx-mime-types
 The ultimate c++ header only content-type utility.
 
@@ -26,3 +27,7 @@ Lookup the Content-Type associated with a file.
 ## License
 
 [MIT](LICENSE)
+
+
+[travis-ci-build-image]: https://travis-ci.org/DataDriven-CAM/cxx-mime-types.svg?branch=master
+[travis-ci-build-url]: https://travis-ci.org/DataDriven-CAM/cxx-mime-types
