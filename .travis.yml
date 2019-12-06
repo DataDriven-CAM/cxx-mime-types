@@ -4,7 +4,7 @@ node_js:
   
 env:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
-      CLANG_VERSION="export CC=gcc-9 && export CXX=g++-9";
+      GCC_VERSION="export CC=gcc-9 && export CXX=g++-9";
     else
       GCC_VERSION="export CC=gcc-9 && export CXX=g++-9";
     fi
@@ -35,7 +35,7 @@ install:
   - yarn install
 
 before-scripte:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${CLANG_VERSION}" ; else eval "${GCC_VERSION}" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${GCC_VERSION}" ; else eval "${GCC_VERSION}" ; fi
   - export PATH=`pwd`/node_modules/.bin:${PATH}
   - export LD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${LD_LIBRARY_PATH}
   - export DYLD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${DYLD_LIBRARY_PATH}
