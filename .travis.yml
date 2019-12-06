@@ -6,7 +6,7 @@ env:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
       CLANG_VERSION="export CC=gcc && export CXX=g++";
     else
-      GCC_VERSION="export CC=gcc && export CXX=g++";
+      GCC_VERSION="export CC=gcc-9 && export CXX=g++-9";
     fi
   
 os: 
@@ -41,6 +41,7 @@ before-scripte:
   - export DYLD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${DYLD_LIBRARY_PATH}
   
 script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${CLANG_VERSION}" ; else eval "${GCC_VERSION}" ; fi
   - mkdir -p test/build/src
   - cd test
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
@@ -48,7 +49,7 @@ script:
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
       nmake -f Makefile.win;
     else
-      g++ --version;
+      g++-9 --version;
       make -f Makefile;
     fi
   - ./main
