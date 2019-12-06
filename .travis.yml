@@ -1,0 +1,42 @@
+language: node_js
+node_js:
+  - "node"
+  
+env:
+  - GCC_VERSION="export CC=gcc-9 && export CXX=g++-9"
+  
+os: 
+  - linux
+  - osx
+  - windows
+  
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-9
+      - cmake
+      
+osx_image: xcode8
+
+  
+install:
+  - export HDF5_HOME_LINUX=/usr/lib/x86_64-linux-gnu/hdf5/serial
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then echo ${HDF5_HOME} ; else eval "${GCC_VERSION}" ; fi
+  # ${CXX} --version
+  - yarn config set PATH ${PATH}
+  - yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
+  - yarn config set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH}
+  - yarn install
+
+before-scripte:
+  - export PATH=`pwd`/node_modules/.bin:${PATH}
+  - export LD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${LD_LIBRARY_PATH}
+  - export DYLD_LIBRARY_PATH=`pwd`/hdf5-1.10.2/dist/lib:${DYLD_LIBRARY_PATH}
+  
+script:
+  - mkdir -p test/build/src
+  - yarn test
+  - cd test
+  -./main
