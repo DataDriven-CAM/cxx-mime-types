@@ -26,8 +26,8 @@ osx_image: xcode9.4
 
   
 install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${CLANG_VERSION}" ; else eval "${GCC_VERSION}" ; fi
-  # ${CXX} --version
+  # if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${CLANG_VERSION}" ; else eval "${GCC_VERSION}" ; fi
+  - ${CXX} --version
   - yarn config set PATH ${PATH}
   - yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
   - yarn config set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH}
