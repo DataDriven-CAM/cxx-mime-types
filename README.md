@@ -1,10 +1,14 @@
 # cxx-mime-types
 The ultimate c++ header only content-type utility.
 
+Inspired by  [the `mime-types@2.1.25` module](https://www.npmjs.com/package/mime-types) and uses the same
+[mime-db](https://www.npmjs.com/package/mime-db) database.
 
 # API
 
 ```
+#include "mime_types.h"
+
     pmc::mimetypes mime("./node_modules/mime-db/db.json");
 
 ```
