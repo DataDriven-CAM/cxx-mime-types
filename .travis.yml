@@ -39,10 +39,10 @@ script:
   - mkdir -p test/build/src
   - cd test
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
-      make -f Makefile
+      make -f Makefile;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
-      make -f Makefile.win
+      nmake -f Makefile.win;
     else
-      make -f Makefile
+      make -f Makefile;
     fi
   - ./main
