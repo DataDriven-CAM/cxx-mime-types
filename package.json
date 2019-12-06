@@ -1,0 +1,22 @@
+{
+  "name": "cxx-mime-types",
+  "version": "1.0.0",
+  "description": "The ultimate c++ content-type utility.",
+  "main": "index.js",
+  "repository": "https://github.com/DataDriven-CAM/cxx-mime-types.git",
+  "author": "<mathmldashx@yahoo.com>",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "doctest": "onqtam/doctest",
+    "mime-db": "^1.42.0"
+  },
+  "dependencies": {
+    "rapidjson": "Tencent/rapidjson"
+  },
+  "scripts": {
+    "clean": "make clean",
+    "build": "cd test && make all",
+    "test": "yarn build && `pwd` && cd test && main"
+  }
+}
