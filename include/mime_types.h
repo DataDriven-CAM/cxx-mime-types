@@ -17,12 +17,13 @@ namespace pmc{
         rapidjson::Document document;
         std::unordered_map<std::string, std::string> map;
         std::mutex m;
+        std::thread t;
         
         mimetypes(std::string jsonPath){
             std::ifstream txt(jsonPath);
             std::vector<char> json((std::istreambuf_iterator<char>(txt)), std::istreambuf_iterator<char>());
             if(document.Parse(&json[0]).HasParseError())throw std::exception();
-            std::thread t([&]{
+            t=std::thread([&]{
             for (rapidjson::Value::ConstMemberIterator itr = document.MemberBegin();itr != document.MemberEnd(); ++itr)
             {
                 rapidjson::Value::ConstMemberIterator itr2 = itr->value.FindMember("extensions");
@@ -44,8 +45,8 @@ namespace pmc{
             if(index!=std::string::npos)file=file.substr(index+1);
             //std::cout<<"mimetypes "<<file<<std::endl;
             std::string key(file.begin(), file.end());
+            const std::lock_guard<std::mutex> lock(m);
             if(map.count(key)){
-                const std::lock_guard<std::mutex> lock(m);
                 return std::string_view(map[key]);
             }
             else{
@@ -57,7 +58,6 @@ namespace pmc{
                             if(key.compare(itr2->value[i].GetString())==0){
                                 //std::cout<<"mime "<<itr->name.GetString()<<std::endl;
                                 {
-                                    const std::lock_guard<std::mutex> lock(m);
                                     map[key]=std::string(itr->name.GetString());
                                 }
                                 return std::string_view(map[key]);
