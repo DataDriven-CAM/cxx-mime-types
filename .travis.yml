@@ -29,10 +29,15 @@ before-install:
 
 install:
   # ${CXX} --version
-  - yarn config set PATH ${PATH}
-  - yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
-  - yarn config set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH}
-  - yarn install
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
+      yarn //config //set PATH ${PATH}
+      yarn //config //set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH}
+      yarn //install
+    else
+      yarn config set PATH ${PATH}
+      yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
+      yarn install
+    fi
 
 before-scripte:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then eval "${CLANG_VERSION}" ; else eval "${GCC_VERSION}" ; fi
