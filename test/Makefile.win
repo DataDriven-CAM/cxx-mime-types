@@ -1,0 +1,10 @@
+!include <win32.mak>
+
+all: ldflags= -ldl -pthread
+all: main
+	$(link) $(ldflags) -out:main $(wildcard build/src/*.obj) lsapi32.lib
+
+main: cxxflags= -O3 -pthread -std=c++2a -I../include -I../node_modules/rapidjson/include -I../node_modules/doctest/doctest
+main: LDFLAGS= 
+main: src/main.cpp
+	$(cxx) $(cxxflags) -c -out:build/src/main.obj src/main.cpp
