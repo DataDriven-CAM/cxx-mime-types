@@ -2,6 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <exception>
+#include <atomic>
 #include <mutex>
 #include <thread>
 
@@ -16,6 +17,7 @@ namespace pmc{
     struct mimetypes{
         rapidjson::Document document;
         std::unordered_map<std::string, std::string> map;
+        std::atomic_flag lock = ATOMIC_FLAG_INIT;
         std::mutex m;
         std::thread t;
         
@@ -32,6 +34,7 @@ namespace pmc{
                         const std::lock_guard<std::mutex> lock(m);
                         map[std::string(itr2->value[i].GetString())]=std::string(itr->name.GetString());
                     }
+                    if(!lock.test_and_set(std::memory_order_acquire)) return;
                     std::this_thread::yield();
                 }
             }
@@ -39,6 +42,10 @@ namespace pmc{
             });
             t.detach();
         };
+        
+        virtual ~mimetypes(){
+            lock.clear(std::memory_order_release);
+        }
         
         std::string_view lookup(std::string_view file){
             size_t index=file.find_last_of('.');
