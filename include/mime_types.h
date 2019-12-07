@@ -45,6 +45,7 @@ namespace pmc{
             //std::cout<<"mimetypes "<<file<<std::endl;
             std::string key(file.begin(), file.end());
             if(map.count(key)){
+                const std::lock_guard<std::mutex> lock(m);
                 return std::string_view(map[key]);
             }
             else{

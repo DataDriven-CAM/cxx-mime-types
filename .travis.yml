@@ -30,13 +30,13 @@ before-install:
 install:
   # ${CXX} --version
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
-      yarn //config //set PATH ${PATH}
-      yarn //config //set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH}
-      yarn //install
+      yarn //config //set PATH ${PATH};
+      yarn //config //set DYLIB_LIBRARY_PATH ${DYLIB_LIBRARY_PATH};
+      yarn //install;
     else
-      yarn config set PATH ${PATH}
-      yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH}
-      yarn install
+      yarn config set PATH ${PATH};
+      yarn config set LD_LIBRARY_PATH ${LD_LIBRARY_PATH};
+      yarn install;
     fi
 
 before-scripte:
