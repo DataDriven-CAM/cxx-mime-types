@@ -52,7 +52,7 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]] ; then
       make -f Makefile;
     elif [[ "$TRAVIS_OS_NAME" == "windows" ]] ; then
-      nmake -f Makefile.win;
+      nmake -f Makefile;
     else
       export CC=gcc-9 && export CXX=g++-9;
       ${CXX} --version;
