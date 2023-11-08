@@ -1,4 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
 #include "doctest.h"
 
 #include <exception>
@@ -37,7 +38,7 @@ protected:
 TEST_CASE("testing the mime types lookup function") {
 //  try
 //  {
-    pmc::mimetypes mimetypes("../node_modules/mime-db/db.json");
+    pmc::mimetypes mimetypes("../cpp_modules/mime-db/db.json");
     std::string_view&& type=mimetypes.lookup(std::string_view(std::string("index.html")));
     CHECK(type.compare("text/html")==0);
     std::string_view&& jstype=mimetypes.lookup(std::string_view(std::string("myscript.js")));

@@ -12,11 +12,12 @@
     "mime-db": "^1.42.0"
   },
   "dependencies": {
-    "rapidjson": "Tencent/rapidjson"
+    "fmt": "fmtlib/fmt",
+    "json-thresher": "DataDriven-CAM/json-thresher"
   },
   "scripts": {
     "clean": "make clean",
     "build": "cd test && make all",
-    "test": "yarn build && `pwd` && cd test && main"
+    "test": "cnpm build && pwd && cd test && ./main "
   }
 }

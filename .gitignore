@@ -1,3 +1,9 @@
 /test/build/
 /test/main
 /node_modules/
+/nbproject/private/
+/nbproject/
+build
+cpp_modules/
+/cpp_modules/fmt/
+test/examples/

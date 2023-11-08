@@ -11,12 +11,12 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "rapidjson/document.h"
+#include "io/json/Binder.h"
 
 namespace pmc{
 
     struct mimetypes{
-        rapidjson::Document document;
+        sylvanmats::io::json::Binder jsonBinder;
         std::unordered_map<std::string, std::string> map;
         std::atomic_flag lock = ATOMIC_FLAG_INIT;
         std::mutex m;
@@ -24,22 +24,29 @@ namespace pmc{
         
         mimetypes(std::string jsonPath){
             std::ifstream txt(jsonPath);
-            std::vector<char> json((std::istreambuf_iterator<char>(txt)), std::istreambuf_iterator<char>());
-            if(document.Parse(&json[0]).HasParseError())throw std::exception();
+            std::string jsonContent((std::istreambuf_iterator<char>(txt)), std::istreambuf_iterator<char>());
+            jsonBinder(jsonContent);
+            sylvanmats::io::json::Path jp="*"_jp;
             t=std::thread([&]{
-            for (rapidjson::Value::ConstMemberIterator itr = document.MemberBegin();itr != document.MemberEnd(); ++itr)
-            {
-                rapidjson::Value::ConstMemberIterator itr2 = itr->value.FindMember("extensions");
-                if (itr2 != document.MemberEnd() && itr2->value.IsArray()){
-                    for (rapidjson::SizeType i = 0; i < itr2->value.Size(); i++){
+                std::vector<std::string> mimeNames;
+                jsonBinder(jp, [&](std::string_view& key, std::any& v){
+//                    std::cout<<key<<std::endl;
+                    mimeNames.push_back(std::string(key.begin(), key.end()));
+                    if(!lock.test_and_set(std::memory_order_acquire)) return;
+                    std::this_thread::yield();
+                });
+                for(std::vector<std::string>::iterator it=mimeNames.begin();it!=mimeNames.end();++it){
+                    std::string jp2Str=(*it);
+                    sylvanmats::io::json::Path jp2;
+                    jp2/jp2Str.c_str()/"extensions";
+                    jsonBinder(jp2, [&](std::string_view& key, std::any& v){
+//                        std::cout<<(*it)<<" "<<key<<std::endl;
                         const std::lock_guard<std::mutex> lock(m);
-                        map[std::string(itr2->value[i].GetString())]=std::string(itr->name.GetString());
-                    }
+                        map[std::string(key.begin(), key.end())]=(*it);
+                    });
                     if(!lock.test_and_set(std::memory_order_acquire)) return;
                     std::this_thread::yield();
                 }
-            }
-                
             });
             t.detach();
         };
@@ -58,41 +65,50 @@ namespace pmc{
                 return std::string_view(map[key]);
             }
             else{
-                for (rapidjson::Value::ConstMemberIterator itr = document.MemberBegin();itr != document.MemberEnd(); ++itr)
-                {
-                    rapidjson::Value::ConstMemberIterator itr2 = itr->value.FindMember("extensions");
-                    if (itr2 != document.MemberEnd() && itr2->value.IsArray()){
-                        for (rapidjson::SizeType i = 0; i < itr2->value.Size(); i++){
-                            if(key.compare(itr2->value[i].GetString())==0){
-                                //std::cout<<"mime "<<itr->name.GetString()<<std::endl;
-                                {
-                                    map[key]=std::string(itr->name.GetString());
-                                }
-                                return std::string_view(map[key]);
-                            }
+                sylvanmats::io::json::Path jp="*"_jp;
+                std::vector<std::string> mimeNames;
+                jsonBinder(jp, [&](std::string_view& key, std::any& v){
+//                    std::cout<<key<<std::endl;
+                    mimeNames.push_back(std::string(key.begin(), key.end()));
+                });
+                for(std::vector<std::string>::iterator it=mimeNames.begin();it!=mimeNames.end();++it){
+                    std::string jp2Str=(*it);
+                    sylvanmats::io::json::Path jp2;
+                    jp2/jp2Str.c_str()/"extensions";
+                    jsonBinder(jp2, [&](std::string_view& key2, std::any& v){
+//                        std::cout<<(*it)<<" "<<key<<std::endl;
+                        if(key.compare(key2)==0){
+                            map[std::string(key2.begin(), key2.end())]=(*it);
                         }
-                    }
+                    });
+                    if(map.count(key))
+                        return std::string_view(map[key]);
                 }
+                
                 return std::string_view("");
             }
         }
         
         std::string_view extension(std::string_view type){
-            const rapidjson::Value& entry = document[type.data()];
-            const rapidjson::Value& extensions = entry["extensions"];
-            if(extensions.IsArray() && extensions.Size()>0){
-                return std::string_view(std::string(extensions[0].GetString()));
-            }
-            else return std::string_view("");
+            std::string jp2Str(type.begin(), type.end());
+            sylvanmats::io::json::Path jp2;
+            jp2/jp2Str.c_str()/"extensions";
+            std::string_view key("");
+            jsonBinder(jp2, [&](std::string_view& key2, std::any& v){
+                if(key.empty())key=key2;
+            });
+            return key;
         }
         
         std::string_view charset(std::string_view type){
-            const rapidjson::Value& entry = document[type.data()];
-            const rapidjson::Value& charset = entry["charset"];
-            if(charset.IsString()){
-                return std::string_view(std::string(charset.GetString()));
-            }
-            else return std::string_view("");
+            std::string jp2Str(type.begin(), type.end());
+            sylvanmats::io::json::Path jp2;
+            jp2/jp2Str.c_str()/"charset";
+            std::string_view key("");
+            jsonBinder(jp2, [&](std::string_view& key2, std::any& v){
+                if(key.empty())key=key2;
+            });
+            return key;
         }
         
         
